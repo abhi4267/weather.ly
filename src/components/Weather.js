@@ -87,7 +87,7 @@ function Weather(props) {
         setForecastData(f);
     }
 
-    const makeHourlyData = (pData) => {
+    const makeHourlyData = async(pData) => {
         for (let i = 0; i < 48; i++) {
             pData.hourly[i].id = i;
             pData.hourly[i].dt = convertDate(pData.hourly[i].dt,pData.timezone_offset);
@@ -96,7 +96,7 @@ function Weather(props) {
         setHourly(pData.hourly);
     }
 
-    const updateWeatherData = (pData) => {
+    const updateWeatherData = async(pData) => {
         setDaily(pData.daily);
         makeHourlyData(pData);
     
