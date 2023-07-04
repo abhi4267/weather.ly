@@ -122,7 +122,7 @@ function Weather(props) {
 
     const getCoordinates = async () => {
 
-        let urlcoord = `http://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('sbox').value}&APPID=34ad4b90df01f726e944cc2de9409b6c&units=metric`
+        let urlcoord = `http://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('sbox').value}&APPID=${props.api_weather}&units=metric`
         let data = await fetch(urlcoord);
         let parsedData = await data.json();
 
@@ -146,7 +146,7 @@ function Weather(props) {
         setLongitude(lon);
         setLatitude(lat);
 
-        let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=34ad4b90df01f726e944cc2de9409b6c&units=metric`
+        let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${props.api_onecall}&units=metric`
         let mdata = await fetch(url);
         let pData = await mdata.json();
 
