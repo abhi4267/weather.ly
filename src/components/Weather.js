@@ -9,9 +9,7 @@ import Daily from './Daily';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBolt } from '@fortawesome/free-solid-svg-icons';
 import Footer from './Footer';
-
 function Weather(props) {
-
     const [text, setText] = useState("New York");
     const [main, setMain] = useState("");
     const [temp, setTemp] = useState(0);
@@ -66,39 +64,24 @@ function Weather(props) {
         c50d: "#404447",
         c50n: "#404447"
     }
-
-
     const convertDate = (unixTime, offset) => {
         const d = new Date();
         let diff = d.getTimezoneOffset() * 60 * 1000;
         return new Date().setTime(unixTime * 1000) + offset * 1000 + diff;
     }
-
-    async function makeDailyData(pData) {
+    const makeDailyData = (pData) => {
         let f = [];
-        if (pData?.daily) {
-            for (let i = 0; i < 8; i++) {
-                let x = {};
-                if (pData.daily[i]?.dt && pData.daily[i]?.temp) {
-                    let s = moment(convertDate(pData.daily[i].dt, pData.timezone_offset)).format('dddd');
-                    x.day = s.substring(0, 3);
-                    x.min = pData.daily[i].temp.min;
-                    x.max = pData.daily[i].temp.max;
-                    f.push(x);
-                }
-            }
+        for (let i = 0; i < 8; i++) {
+            let x = {};
+            let s = moment(convertDate(pData.daily[i].dt, pData.timezone_offset)).format('dddd');
+            x.day = s.substring(0, 3);
+            x.min = pData.daily[i].temp.min;
+            x.max = pData.daily[i].temp.max;
+            f.push(x);
         }
         setForecastData(f);
     }
-     
-      
-      
-      
-      
-      
-      
-
-    const makeHourlyData = async(pData) => {
+    const makeHourlyData = (pData) => {
         for (let i = 0; i < 48; i++) {
             pData.hourly[i].id = i;
             pData.hourly[i].dt = convertDate(pData.hourly[i].dt,pData.timezone_offset);
@@ -106,19 +89,10 @@ function Weather(props) {
         
         setHourly(pData.hourly);
     }
-
-    const updateWeatherData = async(pData) => {
-        console.log('pData:', pData);
-        if (pData && pData.daily) {
-            setDaily(pData.daily);
-          } else {
-            setDaily([]);
-          }
-          
-        
+    const updateWeatherData = (pData) => {
+        setDaily(pData.daily);
         makeHourlyData(pData);
     
-
         setMain(pData.current.weather[0].main);
         setTemp((pData.current.temp).toFixed(0));
         setOffset(pData.timezone_offset * 1000);
@@ -133,17 +107,12 @@ function Weather(props) {
         setSunset(convertDate(pData.current.sunset, pData.timezone_offset));
         setDate(convertDate(pData.current.dt, pData.timezone_offset));
         setIconid(pData.current.weather[0].icon);
-
         makeDailyData(pData);
     }
-
-
     const getCoordinates = async () => {
-
-        let urlcoord = `http://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('sbox').value}&APPID=34ad4b90df01f726e944cc2de9409b6c&units=metric`
+        let urlcoord = `http://api.openweathermap.org/data/2.5/weather?q=${document.getElementById('sbox').value}&APPID=${props.api_weather}&units=metric`
         let data = await fetch(urlcoord);
         let parsedData = await data.json();
-
         if (parsedData.cod === 200)
             return {
                 lon: await parsedData.coord.lon,
@@ -158,20 +127,14 @@ function Weather(props) {
             }
         }
     }
-
-
     const getWeatherData = async (lat, lon) => {
         setLongitude(lon);
         setLatitude(lat);
-
-        let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=34ad4b90df01f726e944cc2de9409b6c&units=metric`
+        let url = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${props.api_onecall}&units=metric`
         let mdata = await fetch(url);
         let pData = await mdata.json();
-
-        console.log(pData);
+        return pData;
     }
-
-
     const updateWeather = async () => {
         setLoading(true);
         const data = await getCoordinates();
@@ -182,16 +145,13 @@ function Weather(props) {
             const pData = await getWeatherData(lat, lon);
             updateWeatherData(pData);
         } else {
-
             setExist(false);
             setCode(data.cod);
             setErr(data.message);
         }
         setLoading(false);
     }
-
     useEffect(() => {
-
         updateWeather();
         //eslint-disable-next-line
     }, [])
@@ -247,7 +207,6 @@ function Weather(props) {
                             <Daily forecastData={forecastData}></Daily>
                         </div>
                     </div>}
-
                     {!exist && <div style={{ height: "70vh" }}>
                         <h1>{code}: {err}</h1>
                         <h1><FontAwesomeIcon icon={faBolt}></FontAwesomeIcon></h1>
@@ -260,5 +219,4 @@ function Weather(props) {
         </div>
     )
 }
-
 export default Weather
